@@ -1,0 +1,8 @@
+[package]
+name = "example-intermediate-data"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+arrow = { version = "53", features = ["pyarrow"] }
+pyo3 = { version = "0.22", features = ["extension-module"] }
