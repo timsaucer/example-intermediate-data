@@ -26,7 +26,8 @@ impl MyDataStoreRaw {
         }
     }
 
-    fn initialize(&mut self,
+    fn initialize(
+        &mut self,
         py: Python<'_>,
         expr_a: &Bound<'_, PyAny>,
         expr_b: &Bound<'_, PyAny>,
@@ -42,12 +43,15 @@ impl MyDataStoreRaw {
 
                 let ret = match a_val {
                     Some(a) => self.special_cases.contains(a),
-                    None => false
+                    None => false,
                 };
 
                 if !ret {
                     // a_val is already checked
-                    let max_val = self.replacements.entry(a_val.unwrap().to_string()).or_default();
+                    let max_val = self
+                        .replacements
+                        .entry(a_val.unwrap().to_string())
+                        .or_default();
                     *max_val = (*max_val).max(*b_val);
                 }
 
@@ -62,7 +66,8 @@ impl MyDataStoreRaw {
         res.into_data().to_pyarrow(py)
     }
 
-    fn replace_from_store(&self,
+    fn replace_from_store(
+        &self,
         py: Python<'_>,
         expr_a: &Bound<'_, PyAny>,
         expr_b: &Bound<'_, PyAny>,
@@ -74,12 +79,13 @@ impl MyDataStoreRaw {
             .iter()
             .zip(b_arr.values().iter())
             .map(|(a_val, b_val)| {
-                a_val.map(|a| {
-                    match self.replacements.get(a) {
+                a_val
+                    .map(|a| match self.replacements.get(a) {
                         Some(b_replacement) => b_replacement,
                         None => b_val,
-                    }
-                }).cloned().unwrap_or(0)
+                    })
+                    .cloned()
+                    .unwrap_or(0)
             });
 
         let res = UInt64Array::from_iter_values(values);
